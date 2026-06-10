@@ -107,7 +107,39 @@
               <small>基于数据放大 winner</small>
             </span>
           </button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-mode="agent">
+            <span class="tab-visual visual-agent" aria-hidden="true"></span>
+            <span class="tab-copy">
+              <strong>Agent Mode</strong>
+              <small>描述需求，自动判断模式</small>
+            </span>
+          </button>
         </div>
+
+        <section class="agent-panel" id="agentPanel" hidden>
+          <div class="section-title">
+            <span>A</span>
+            <div>
+              <h3>Agent 需求识别</h3>
+              <p>直接描述你的产品、素材和目标，Agent 会判断该用哪个模式，并总结需要补充的信息。</p>
+            </div>
+          </div>
+          <label class="field">
+            <span>告诉 Agent 你的广告需求</span>
+            <textarea
+              id="agentPrompt"
+              rows="5"
+              placeholder="例如：我是一个做护肤品的 Shopify 卖家，有几条竞品 TikTok 广告想模仿结构，但要换成我的产品，希望生成 20 条下周测试素材。"
+            ></textarea>
+          </label>
+          <div class="agent-actions">
+            <button class="primary-button" type="button" id="runAgent">
+              <i data-lucide="sparkles"></i>
+              让 Agent 分析
+            </button>
+          </div>
+          <div class="agent-result" id="agentResult" hidden></div>
+        </section>
 
         <div class="mode-brief" aria-live="polite">
           <div>

@@ -89,12 +89,44 @@ const modeMeta = {
     constraintsPlaceholder: "例如 不要改变核心卖点，不要扩大预算假设，不要混用不同市场的数据。",
     outputs: ["历史素材表现复盘", "有效创意模式总结", "下一批 50 条测试方向", "A/B 测试矩阵"],
   },
+  agent: {
+    name: "Agent Mode",
+    description: "根据你的自然语言描述，自动判断该使用 Quick、Remix 还是 Scale。",
+    briefTitle: "让 Agent 先判断路径",
+    briefCopy: "适合你还不确定该从产品、参考广告还是历史数据开始时，先把需求讲清楚。",
+    tags: ["自动判断", "需求总结", "补充清单"],
+    assetsTitle: "Agent 识别中",
+    assetsHelp: "先在上方描述你的需求，Agent 会给出推荐模式和下一步。",
+    uploads: [
+      ["需求描述", "产品、素材、目标和约束"],
+      ["模式推荐", "Quick / Remix / Scale"],
+      ["信息缺口", "下一步需要补充什么"],
+    ],
+    referenceLabel: "Agent 分析结果",
+    referencePlaceholder: "Agent 会把你的需求总结到这里。",
+    strategyTitle: "Agent 策略",
+    strategyHelp: "先让 Agent 判断最适合的生成路径。",
+    styles: [
+      { name: "自动选择模式", note: "让 Agent 先判断从哪里开始", visual: "agent" },
+      { name: "总结需求", note: "提炼产品、目标和素材", visual: "plan" },
+      { name: "列出缺失信息", note: "告诉你还需要补什么", visual: "matrix" },
+      { name: "给下一步建议", note: "转入对应生成模式", visual: "cta" },
+    ],
+    quantity: "10",
+    constraintsLabel: "Agent 需要注意的约束",
+    constraintsPlaceholder: "例如 不要夸大疗效，需要面向美国 TikTok，不要使用竞品品牌名。",
+    outputs: ["推荐生成模式", "需求信息总结", "缺失信息清单", "下一步填写建议"],
+  },
 };
 
 const form = document.querySelector("#intakeForm");
 const tabs = document.querySelectorAll(".tab");
 const toast = document.querySelector("#toast");
 const draftButton = document.querySelector("#saveDraft");
+const agentPanel = document.querySelector("#agentPanel");
+const agentPrompt = document.querySelector("#agentPrompt");
+const runAgentButton = document.querySelector("#runAgent");
+const agentResult = document.querySelector("#agentResult");
 const stepPanels = document.querySelectorAll(".step-panel");
 const stepIndicators = document.querySelectorAll("[data-step-indicator]");
 const prevStepButton = document.querySelector("#prevStep");
@@ -166,6 +198,15 @@ function updateStep() {
   submitBriefButton.hidden = currentStep !== stepPanels.length - 1;
 }
 
+function setModeTab(mode) {
+  tabs.forEach((item) => {
+    const selected = item.dataset.mode === mode;
+    item.classList.toggle("active", selected);
+    item.setAttribute("aria-selected", String(selected));
+  });
+  applyMode(mode);
+}
+
 function validateCurrentStep() {
   const requiredFields = stepPanels[currentStep].querySelectorAll("[required]");
   for (const field of requiredFields) {
@@ -195,6 +236,9 @@ function renderStyleChoices(styles) {
 
 function applyMode(mode) {
   const meta = modeMeta[mode];
+  const isAgent = mode === "agent";
+  agentPanel.hidden = !isAgent;
+  form.hidden = isAgent;
   preview.modeName.textContent = meta.name;
   preview.modeDescription.textContent = meta.description;
   modeFields.briefTitle.textContent = meta.briefTitle;
@@ -223,12 +267,7 @@ function applyMode(mode) {
 tabs.forEach((tab) => {
   tab.addEventListener("click", () => {
     const mode = tab.dataset.mode;
-    tabs.forEach((item) => {
-      const selected = item === tab;
-      item.classList.toggle("active", selected);
-      item.setAttribute("aria-selected", String(selected));
-    });
-    applyMode(mode);
+    setModeTab(mode);
   });
 });
 
@@ -253,6 +292,67 @@ prevStepButton.addEventListener("click", () => {
   currentStep = Math.max(currentStep - 1, 0);
   updateStep();
   document.querySelector(".step-progress").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+runAgentButton.addEventListener("click", async () => {
+  const description = agentPrompt.value.trim();
+  if (!description) {
+    showToast("请先描述你的广告需求。");
+    agentPrompt.focus();
+    return;
+  }
+
+  runAgentButton.disabled = true;
+  agentResult.hidden = false;
+  agentResult.innerHTML = "<p>Agent 正在分析需求...</p>";
+
+  try {
+    const response = await fetch("/api/agent", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ description }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Agent 分析失败");
+
+    const modeName = modeMeta[result.recommendedMode]?.name || result.recommendedMode;
+    const missing = Array.isArray(result.missingInfo) ? result.missingInfo : [];
+    agentResult.innerHTML = `
+      <div class="agent-result-head">
+        <span>推荐模式</span>
+        <strong>${modeName}</strong>
+        <small>Confidence ${result.confidence ?? "-"}%</small>
+      </div>
+      <p>${result.reason || ""}</p>
+      <dl>
+        <div><dt>产品</dt><dd>${result.summary?.product || "未识别"}</dd></div>
+        <div><dt>目标</dt><dd>${result.summary?.goal || "未识别"}</dd></div>
+        <div><dt>素材</dt><dd>${result.summary?.availableAssets || "未识别"}</dd></div>
+        <div><dt>受众</dt><dd>${result.summary?.audience || "未识别"}</dd></div>
+      </dl>
+      <div class="agent-missing">
+        <strong>还需要补充</strong>
+        <ul>${missing.map((item) => `<li>${item}</li>`).join("") || "<li>暂无</li>"}</ul>
+      </div>
+      <button class="primary-button" type="button" data-apply-agent-mode="${result.recommendedMode}">
+        切到 ${modeName}
+      </button>
+    `;
+  } catch (error) {
+    agentResult.innerHTML = `<p>${error.message}</p>`;
+  } finally {
+    runAgentButton.disabled = false;
+  }
+});
+
+agentResult.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-apply-agent-mode]");
+  if (!button) return;
+  const mode = button.dataset.applyAgentMode;
+  if (!modeMeta[mode]) return;
+  setModeTab(mode);
+  currentStep = 0;
+  updateStep();
 });
 
 draftButton.addEventListener("click", () => {
