@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vignette - Generate Winning Video Ads</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="cover-page">
+    <main class="cover-shell">
+      <nav class="cover-nav" aria-label="主导航">
+        <a class="cover-logo" href="./index.html" aria-label="Vignette 首页">
+          <span class="brand-mark" aria-hidden="true">V</span>
+          <strong>Vignette</strong>
+        </a>
+        <a class="nav-action" href="./intake.html">
+          <i data-lucide="wand-sparkles"></i>
+          生成视频
+        </a>
+      </nav>
+
+      <section class="cover-hero" aria-label="Vignette 封面">
+        <div class="apple-hero-card">
+          <div class="apple-hero-copy">
+            <p class="eyebrow">Vignette</p>
+            <h1>Generate winning video ads.</h1>
+            <p class="hero-lede">从一条经典广告开始，拆解 hook、结构和转化逻辑，再生成你的下一批测试视频。</p>
+            <div class="hero-actions">
+              <a class="primary-button cover-cta" href="./intake.html">
+                <i data-lucide="play"></i>
+                生成视频广告
+              </a>
+              <span class="hero-note">Reference → Remix → Scale</span>
+            </div>
+          </div>
+
+          <div class="apple-video-frame">
+            <video autoplay muted loop playsinline preload="metadata" poster="">
+              <source src="./assets/watch-ad-behind-scenes.mp4" type="video/mp4" />
+            </video>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
