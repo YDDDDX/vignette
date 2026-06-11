@@ -410,8 +410,6 @@ form.addEventListener("submit", (event) => {
 
 window.addEventListener("DOMContentLoaded", async () => {
   window.lucide?.createIcons();
-  const session = await window.vignetteAuth.requireSession();
-  if (!session) return;
   const params = new URLSearchParams(window.location.search);
   const requestedMode = params.get("mode") || sessionStorage.getItem("vignetteAgentMode") || "quick";
   const initialMode = modeMeta[requestedMode] ? requestedMode : "quick";

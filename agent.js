@@ -65,19 +65,15 @@ runAgentButton.addEventListener("click", async () => {
   showAgentMessage("Agent 正在分析需求...");
 
   try {
-    const session = await window.vignetteAuth.getCurrentSession();
-    if (!session) {
-      sessionStorage.setItem("vignettePendingPrompt", description);
-      await window.vignetteAuth.requireSession();
-      return;
+    const session = await window.vignetteAuth?.getCurrentSession().catch(() => null);
+    const headers = { "content-type": "application/json" };
+    if (session?.access_token) {
+      headers.authorization = `Bearer ${session.access_token}`;
     }
 
     const response = await fetch("/api/agent", {
       method: "POST",
-      headers: {
-        authorization: `Bearer ${session.access_token}`,
-        "content-type": "application/json",
-      },
+      headers,
       body: JSON.stringify({ description }),
     });
     const result = await response.json();
