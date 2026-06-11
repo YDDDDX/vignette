@@ -408,8 +408,10 @@ form.addEventListener("submit", (event) => {
   showToast("创意 Brief 已生成，数据已输出到浏览器控制台。");
 });
 
-window.addEventListener("DOMContentLoaded", () => {
-  lucide.createIcons();
+window.addEventListener("DOMContentLoaded", async () => {
+  window.lucide?.createIcons();
+  const session = await window.vignetteAuth.requireSession();
+  if (!session) return;
   const params = new URLSearchParams(window.location.search);
   const requestedMode = params.get("mode") || sessionStorage.getItem("vignetteAgentMode") || "quick";
   const initialMode = modeMeta[requestedMode] ? requestedMode : "quick";

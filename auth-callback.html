@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vignette - Signing in</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="login-page">
+    <main class="login-shell">
+      <section class="login-card">
+        <p class="eyebrow">Account</p>
+        <h1>正在完成登录...</h1>
+        <p id="callbackStatus">请稍等。</p>
+      </section>
+    </main>
+
+    <script src="./vendor/supabase.min.js"></script>
+    <script src="./auth.js"></script>
+    <script>
+      window.vignetteAuth.completeAuthRedirect().catch((error) => {
+        document.querySelector("#callbackStatus").textContent = error.message;
+      });
+    </script>
+  </body>
+</html>

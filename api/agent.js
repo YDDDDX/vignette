@@ -11,11 +11,42 @@ function extractJson(text) {
   }
 }
 
+async function verifySupabaseUser(request) {
+  const authHeader = request.headers.authorization || "";
+  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+  if (!token) return null;
+
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !supabaseSecretKey) {
+    throw new Error("Missing Supabase server environment variables");
+  }
+
+  const userResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
+    headers: {
+      apikey: supabaseSecretKey,
+      authorization: `Bearer ${token}`,
+    },
+  });
+  if (!userResponse.ok) return null;
+  return userResponse.json();
+}
+
 module.exports = async function handler(request, response) {
   response.setHeader("content-type", "application/json; charset=utf-8");
 
   if (request.method !== "POST") {
     return response.status(405).json({ error: "Method not allowed" });
+  }
+
+  let user;
+  try {
+    user = await verifySupabaseUser(request);
+  } catch (error) {
+    return response.status(500).json({ error: error.message });
+  }
+  if (!user) {
+    return response.status(401).json({ error: "Login required" });
   }
 
   const apiKey = process.env.DASHSCOPE_API_KEY;

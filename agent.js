@@ -41,9 +41,19 @@ runAgentButton.addEventListener("click", async () => {
   showAgentMessage("Agent 正在分析需求...");
 
   try {
+    const session = await window.vignetteAuth.getCurrentSession();
+    if (!session) {
+      sessionStorage.setItem("vignettePendingPrompt", description);
+      await window.vignetteAuth.requireSession();
+      return;
+    }
+
     const response = await fetch("/api/agent", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: {
+        authorization: `Bearer ${session.access_token}`,
+        "content-type": "application/json",
+      },
       body: JSON.stringify({ description }),
     });
     const result = await response.json();
@@ -79,7 +89,7 @@ runAgentButton.addEventListener("click", async () => {
         <i data-lucide="arrow-right"></i>
       </a>
     `;
-    lucide.createIcons();
+    window.lucide?.createIcons();
   } catch (error) {
     showAgentMessage(error.message);
   } finally {
@@ -88,5 +98,10 @@ runAgentButton.addEventListener("click", async () => {
 });
 
 window.addEventListener("DOMContentLoaded", () => {
-  lucide.createIcons();
+  const pendingPrompt = sessionStorage.getItem("vignettePendingPrompt");
+  if (pendingPrompt && !agentPrompt.value) {
+    agentPrompt.value = pendingPrompt;
+    sessionStorage.removeItem("vignettePendingPrompt");
+  }
+  window.lucide?.createIcons();
 });
