@@ -377,80 +377,6 @@ prevStepButton.addEventListener("click", () => {
   document.querySelector(".step-progress").scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
-runAgentButton.addEventListener("click", async () => {
-  const description = agentPrompt.value.trim();
-  if (!description) {
-    showToast("请先描述你的广告需求。");
-    agentPrompt.focus();
-    return;
-  }
-
-  runAgentButton.disabled = true;
-  agentResult.hidden = false;
-  agentResult.innerHTML = "<p>Agent 正在分析需求...</p>";
-
-  try {
-    const response = await fetch("/api/agent", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ description }),
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "Agent 分析失败");
-
-    const recommendedMode = modeMeta[result.recommendedMode] ? result.recommendedMode : "quick";
-    const modeName = modeMeta[recommendedMode].name;
-    const missing = Array.isArray(result.missingInfo) ? result.missingInfo : [];
-    latestAgentBrief = result.creativeBrief || null;
-    applyAgentBrief(latestAgentBrief);
-    agentResult.innerHTML = `
-      <div class="agent-result-head">
-        <span>推荐模式</span>
-        <strong>${escapeHtml(modeName)}</strong>
-        <small>Confidence ${escapeHtml(result.confidence ?? "-")}%</small>
-      </div>
-      <p>${escapeHtml(result.reason || "")}</p>
-      <dl>
-        <div><dt>Product Summary</dt><dd>${escapeHtml(result.summary?.product || "未识别")}</dd></div>
-        <div><dt>Goal</dt><dd>${escapeHtml(result.summary?.goal || "未识别")}</dd></div>
-        <div><dt>Assets</dt><dd>${escapeHtml(result.summary?.availableAssets || "未识别")}</dd></div>
-        <div><dt>Audience</dt><dd>${escapeHtml(result.summary?.audience || "未识别")}</dd></div>
-      </dl>
-      ${
-        latestAgentBrief
-          ? `<div class="agent-brief-note">
-              <strong>已生成 Live Brief</strong>
-              <span>${escapeHtml(latestAgentBrief.hookVariants || latestAgentBrief.coreSellingAngles || "右侧已更新完整创意简报。")}</span>
-            </div>`
-          : ""
-      }
-      <div class="agent-missing">
-        <strong>还需要补充</strong>
-        <ul>${missing.map((item) => `<li>${escapeHtml(item)}</li>`).join("") || "<li>暂无</li>"}</ul>
-      </div>
-      <button class="primary-button" type="button" data-apply-agent-mode="${recommendedMode}">
-        使用 ${escapeHtml(modeName)}
-      </button>
-    `;
-  } catch (error) {
-    agentResult.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
-  } finally {
-    runAgentButton.disabled = false;
-  }
-});
-
-agentResult.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-apply-agent-mode]");
-  if (!button) return;
-  const mode = button.dataset.applyAgentMode;
-  if (!modeMeta[mode]) return;
-  setModeTab(mode);
-  applyAgentBrief(latestAgentBrief);
-  currentStep = 0;
-  updateStep();
-  document.querySelector(".manual-mode-head").scrollIntoView({ behavior: "smooth", block: "start" });
-});
-
 draftButton.addEventListener("click", () => {
   const data = Object.fromEntries(new FormData(form).entries());
   data.mode = currentMode();
@@ -484,7 +410,16 @@ form.addEventListener("submit", (event) => {
 
 window.addEventListener("DOMContentLoaded", () => {
   lucide.createIcons();
-  applyMode("quick");
+  const params = new URLSearchParams(window.location.search);
+  const requestedMode = params.get("mode") || sessionStorage.getItem("vignetteAgentMode") || "quick";
+  const initialMode = modeMeta[requestedMode] ? requestedMode : "quick";
+  try {
+    latestAgentBrief = JSON.parse(sessionStorage.getItem("vignetteAgentBrief") || "null");
+  } catch {
+    latestAgentBrief = null;
+  }
+  setModeTab(initialMode);
   updateStep();
   updatePreview();
+  applyAgentBrief(latestAgentBrief);
 });

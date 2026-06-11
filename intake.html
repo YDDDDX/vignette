@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Vignette - Winning Video Ads Intake</title>
+    <title>Vignette - Agent Intake</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -12,451 +12,75 @@
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body class="intake-page">
-    <main class="app-shell">
-      <aside class="brand-panel" aria-label="项目概览">
-        <div class="brand-top">
-          <div class="brand-mark" aria-hidden="true">V</div>
-          <div>
-            <p class="eyebrow">Vignette</p>
-            <h1>生成、测试、放大 winning video ads</h1>
-          </div>
+  <body class="intake-page agent-entry-page">
+    <main class="agent-entry-shell">
+      <nav class="agent-entry-nav" aria-label="顶部导航">
+        <a class="cover-logo" href="./index.html" aria-label="Vignette 首页">
+          <span class="brand-mark" aria-hidden="true">V</span>
+          <strong>Vignette</strong>
+        </a>
+        <a class="nav-action" href="./details.html">
+          手动选择模式
+          <i data-lucide="arrow-right"></i>
+        </a>
+      </nav>
+
+      <section class="agent-entry-hero" aria-labelledby="agentTitle">
+        <div class="agent-entry-copy">
+          <p class="eyebrow">Creative Intake Agent</p>
+          <h1 id="agentTitle">告诉 Agent 你的广告需求。</h1>
+          <p>
+            不用先判断 Quick、Remix 还是 Scale。描述产品、素材和目标，Agent 会推荐生成路径，并整理一份可继续完善的创意简报。
+          </p>
         </div>
 
-        <div class="visual-board" aria-hidden="true">
-          <div class="video-frame frame-main">
-            <div class="frame-toolbar">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <div class="product-shot">
-              <div class="bottle"></div>
-              <div class="caption-strip">Hook 03 · Problem/Solution</div>
-            </div>
-          </div>
-          <div class="metric-card metric-a">
-            <span>CTR</span>
-            <strong>+28%</strong>
-          </div>
-          <div class="metric-card metric-b">
-            <span>Variants</span>
-            <strong>36</strong>
-          </div>
-        </div>
-
-        <div class="mode-summary">
-          <div>
-            <span class="step-number">01</span>
-            <p>上传产品与素材</p>
-          </div>
-          <div>
-            <span class="step-number">02</span>
-            <p>拆解参考广告结构</p>
-          </div>
-          <div>
-            <span class="step-number">03</span>
-            <p>生成下一批测试变体</p>
-          </div>
-        </div>
-      </aside>
-
-      <section class="workspace" aria-label="广告生成需求输入">
-        <div class="workspace-brand">
-          <a class="cover-logo" href="./index.html" aria-label="Vignette 首页">
-            <span class="brand-mark" aria-hidden="true">V</span>
-            <strong>Vignette</strong>
-          </a>
-          <span>Generate, test, and scale winning video ads</span>
-        </div>
-
-        <header class="workspace-header">
-          <div>
-            <p class="eyebrow">Creative Intake</p>
-            <h2>先描述你的广告需求</h2>
-          </div>
-          <div class="header-actions">
-            <a class="icon-button" href="./index.html" aria-label="返回封面" title="返回封面">
-              <i data-lucide="arrow-left"></i>
-            </a>
-            <button class="icon-button" type="button" aria-label="保存草稿" title="保存草稿" id="saveDraft">
-              <i data-lucide="save"></i>
-            </button>
-          </div>
-        </header>
-
-        <section class="agent-panel" id="agentPanel">
+        <section class="agent-panel agent-entry-card" id="agentPanel">
           <div class="section-title">
             <span>A</span>
             <div>
               <h3>Agent Mode｜智能需求识别</h3>
-              <p>先用自然语言描述产品、素材和目标，Agent 会推荐 Quick、Remix 或 Scale，并总结需要补充的信息。</p>
+              <p>一句话也可以开始，后续再补充产品链接、素材、参考广告和投放数据。</p>
             </div>
           </div>
           <label class="field">
             <span>描述你的广告需求</span>
             <textarea
               id="agentPrompt"
-              rows="5"
+              rows="7"
               placeholder="I sell a posture corrector on TikTok. I have 3 product images and one competitor ad. Generate 10 UGC-style variants."
             ></textarea>
           </label>
-          <div class="agent-actions">
+          <div class="agent-entry-actions">
             <button class="primary-button" type="button" id="runAgent">
               <i data-lucide="sparkles"></i>
               让 Agent 分析
             </button>
+            <a class="secondary-button" href="./details.html">
+              手动填写
+              <i data-lucide="sliders-horizontal"></i>
+            </a>
           </div>
           <div class="agent-result" id="agentResult" hidden></div>
         </section>
-
-        <div class="manual-mode-head">
-          <span>Manual setup</span>
-          <strong>也可以手动选择生成路径</strong>
-        </div>
-
-        <div class="tabs" role="tablist" aria-label="生成模式">
-          <button class="tab active" type="button" role="tab" aria-selected="true" data-mode="quick">
-            <span class="tab-visual visual-quick" aria-hidden="true"></span>
-            <span class="tab-copy">
-              <strong>Quick Create｜快速生成</strong>
-              <small>只有产品信息时使用</small>
-            </span>
-          </button>
-          <button class="tab" type="button" role="tab" aria-selected="false" data-mode="remix">
-            <span class="tab-visual visual-remix" aria-hidden="true"></span>
-            <span class="tab-copy">
-              <strong>Remix Reference｜参考广告改写</strong>
-              <small>有竞品或参考广告时使用</small>
-            </span>
-          </button>
-          <button class="tab" type="button" role="tab" aria-selected="false" data-mode="scale">
-            <span class="tab-visual visual-scale" aria-hidden="true"></span>
-            <span class="tab-copy">
-              <strong>Scale Winners｜放大爆款</strong>
-              <small>有历史投放数据时使用</small>
-            </span>
-          </button>
-        </div>
-
-        <div class="mode-brief" aria-live="polite">
-          <div>
-            <span class="mode-kicker">当前任务</span>
-            <h3 id="modeBriefTitle">从产品快速生成广告</h3>
-            <p id="modeBriefCopy">适合刚开始测试的卖家，只需要产品信息和基础素材，就能生成一批低门槛广告变体。</p>
-          </div>
-          <div class="mode-tags" id="modeTags">
-            <span>低门槛</span>
-            <span>模板生成</span>
-            <span>快速测试</span>
-          </div>
-        </div>
-
-        <form class="intake-form" id="intakeForm">
-          <div class="step-progress" aria-label="填写进度">
-            <div class="step-dot active" data-step-indicator="0">
-              <span>1</span>
-              <strong>产品</strong>
-            </div>
-            <div class="step-dot" data-step-indicator="1">
-              <span>2</span>
-              <strong>素材</strong>
-            </div>
-            <div class="step-dot" data-step-indicator="2">
-              <span>3</span>
-              <strong>策略</strong>
-            </div>
-          </div>
-
-          <section class="form-section step-panel active" data-step="0">
-            <div class="section-title">
-              <span>1</span>
-              <div>
-                <h3>产品信息</h3>
-                <p>让系统理解产品、受众和转化目标。</p>
-              </div>
-            </div>
-
-            <div class="grid two">
-              <label class="field">
-                <span>品牌 / 店铺名</span>
-                <input name="brand" type="text" placeholder="例如 GlowLab" required />
-              </label>
-              <label class="field">
-                <span>产品链接</span>
-                <input name="productUrl" type="url" placeholder="https://yourstore.com/product" required />
-              </label>
-            </div>
-
-            <label class="field">
-              <span>一句话卖点</span>
-              <input name="promise" type="text" placeholder="例如 30 秒内遮盖细纹，全天不脱妆" maxlength="90" />
-            </label>
-
-            <div class="grid two">
-              <label class="field">
-                <span>广告目标</span>
-                <select name="adGoal">
-                  <option>Get purchases</option>
-                  <option>App installs</option>
-                  <option>Lead generation</option>
-                  <option>Brand awareness</option>
-                </select>
-              </label>
-              <label class="field">
-                <span>产品价格区间</span>
-                <select name="priceRange">
-                  <option>Under $20</option>
-                  <option>$20–$50</option>
-                  <option>$50–$100</option>
-                  <option>$100+</option>
-                </select>
-              </label>
-            </div>
-
-            <div class="grid three">
-              <label class="field">
-                <span>目标市场</span>
-                <select name="market">
-                  <option>美国</option>
-                  <option>英国</option>
-                  <option>东南亚</option>
-                  <option>欧洲</option>
-                  <option>日本 / 韩国</option>
-                  <option>其他</option>
-                </select>
-              </label>
-              <label class="field">
-                <span>主要平台</span>
-                <select name="platform">
-                  <option>TikTok</option>
-                  <option>Meta</option>
-                  <option>YouTube Shorts</option>
-                  <option>Instagram Reels</option>
-                  <option>Amazon</option>
-                </select>
-              </label>
-              <label class="field">
-                <span>主要卖点类型</span>
-                <select name="sellingAngle">
-                  <option>Saves time</option>
-                  <option>Saves money</option>
-                  <option>Looks better</option>
-                  <option>Solves pain</option>
-                  <option>Social proof</option>
-                  <option>Novelty / curiosity</option>
-                </select>
-              </label>
-            </div>
-
-            <label class="field">
-              <span>目标用户与痛点</span>
-              <textarea name="audience" rows="4" placeholder="例如 25-35 岁办公室女性，想快速完成妆容，但担心卡粉、暗沉、持妆差。"></textarea>
-            </label>
-          </section>
-
-          <section class="form-section step-panel" data-step="1">
-            <div class="section-title">
-              <span>2</span>
-              <div>
-                <h3 id="assetsTitle">素材与参考广告</h3>
-                <p id="assetsHelp">上传产品图、视频素材或表现好的参考广告。</p>
-              </div>
-            </div>
-
-            <div class="upload-grid">
-              <label class="upload-box">
-                <input type="file" name="productAssets" accept="image/*,video/*" multiple />
-                <i data-lucide="package-plus"></i>
-                <strong id="productAssetsLabel">产品素材</strong>
-                <small id="productAssetsHint">图片、视频、开箱、实拍</small>
-              </label>
-              <label class="upload-box">
-                <input type="file" name="referenceAds" accept="video/*" multiple />
-                <i data-lucide="film"></i>
-                <strong id="referenceAdsLabel">参考广告</strong>
-                <small id="referenceAdsHint">竞品、历史 winner、灵感视频</small>
-              </label>
-              <label class="upload-box">
-                <input type="file" name="performanceData" accept=".csv,.xlsx,.xls" />
-                <i data-lucide="chart-no-axes-combined"></i>
-                <strong id="performanceDataLabel">投放数据</strong>
-                <small id="performanceDataHint">Spend、CTR、CPA、ROAS</small>
-              </label>
-            </div>
-
-            <label class="field">
-              <span id="referenceLabel">参考广告链接</span>
-              <textarea name="referenceLinks" rows="3" placeholder="每行一个链接：TikTok、Meta Ad Library、公开视频链接均可"></textarea>
-            </label>
-          </section>
-
-          <section class="form-section step-panel" data-step="2">
-            <div class="section-title">
-              <span>3</span>
-              <div>
-                <h3 id="strategyTitle">生成策略</h3>
-                <p id="strategyHelp">控制广告风格、数量和测试方向。</p>
-              </div>
-            </div>
-
-            <div class="choice-grid" id="styleChoices">
-              <label class="choice checked">
-                <input type="radio" name="style" value="UGC 口播" checked />
-                <span>UGC 口播</span>
-              </label>
-              <label class="choice">
-                <input type="radio" name="style" value="痛点广告" />
-                <span>痛点广告</span>
-              </label>
-              <label class="choice">
-                <input type="radio" name="style" value="Before-After" />
-                <span>Before-After</span>
-              </label>
-              <label class="choice">
-                <input type="radio" name="style" value="产品 Demo" />
-                <span>产品 Demo</span>
-              </label>
-              <label class="choice">
-                <input type="radio" name="style" value="测评风格" />
-                <span>测评风格</span>
-              </label>
-              <label class="choice">
-                <input type="radio" name="style" value="剧情短剧" />
-                <span>剧情短剧</span>
-              </label>
-            </div>
-
-            <div class="grid three">
-              <label class="field">
-                <span>生成数量</span>
-                <input name="quantity" type="number" min="3" max="100" value="10" />
-              </label>
-              <label class="field">
-                <span>视频时长</span>
-                <select name="duration">
-                  <option>15 秒</option>
-                  <option>20 秒</option>
-                  <option>30 秒</option>
-                  <option>45 秒</option>
-                  <option>60 秒</option>
-                </select>
-              </label>
-              <label class="field">
-                <span>语言</span>
-                <select name="language">
-                  <option>英语</option>
-                  <option>中文</option>
-                  <option>西班牙语</option>
-                  <option>日语</option>
-                  <option>多语言</option>
-                </select>
-              </label>
-            </div>
-
-            <label class="field">
-              <span id="constraintsLabel">不要出现的内容</span>
-              <textarea name="constraints" rows="3" placeholder="例如 不要夸大疗效，不要使用医生形象，不要提及竞品品牌名。"></textarea>
-            </label>
-
-            <div class="field">
-              <span>素材限制</span>
-              <div class="constraint-grid">
-                <label><input type="checkbox" name="assetConstraints" value="Only use uploaded assets" /> Only use uploaded assets</label>
-                <label><input type="checkbox" name="assetConstraints" value="Can generate new scenes" /> Can generate new scenes</label>
-                <label><input type="checkbox" name="assetConstraints" value="Avoid showing faces" /> Avoid showing faces</label>
-                <label><input type="checkbox" name="assetConstraints" value="Avoid medical claims" /> Avoid medical claims</label>
-                <label><input type="checkbox" name="assetConstraints" value="Avoid unrealistic results" /> Avoid unrealistic results</label>
-              </div>
-            </div>
-          </section>
-
-          <footer class="form-actions">
-            <button class="secondary-button" type="button" id="prevStep">
-              <i data-lucide="arrow-left"></i>
-              上一步
-            </button>
-            <button class="secondary-button" type="reset">
-              <i data-lucide="rotate-ccw"></i>
-              重置
-            </button>
-            <button class="primary-button" type="button" id="nextStep">
-              继续
-              <i data-lucide="arrow-right"></i>
-            </button>
-            <button class="primary-button" type="submit" id="submitBrief">
-              <i data-lucide="wand-sparkles"></i>
-              生成创意 Brief
-            </button>
-          </footer>
-        </form>
       </section>
 
-      <aside class="preview-panel" aria-label="实时创意简报">
-        <div class="preview-header">
-          <div>
-            <p class="eyebrow">Live Brief</p>
-            <h2>创意简报</h2>
-          </div>
-          <span class="status-pill">Draft</span>
+      <section class="agent-entry-routing" aria-label="Agent 会自动判断的模式">
+        <div>
+          <span>Quick Create｜快速生成</span>
+          <p>没有参考广告时，从产品信息和模板生成第一批测试素材。</p>
         </div>
-
-        <div class="brief-card">
-          <span class="brief-label">当前模式</span>
-          <strong id="modeName">Quick Create</strong>
-          <p id="modeDescription">从产品信息和模板快速生成一批可测试广告。</p>
+        <div>
+          <span>Remix Reference｜参考广告改写</span>
+          <p>有竞品或参考广告时，拆解结构后生成原创变体。</p>
         </div>
-
-        <div class="brief-list">
-          <div>
-            <span>品牌</span>
-            <strong id="previewBrand">待填写</strong>
-          </div>
-          <div>
-            <span>平台</span>
-            <strong id="previewPlatform">TikTok</strong>
-          </div>
-          <div>
-            <span>风格</span>
-            <strong id="previewStyle">UGC 口播</strong>
-          </div>
-          <div>
-            <span>数量</span>
-            <strong><span id="previewQuantity">10</span> 条</strong>
-          </div>
+        <div>
+          <span>Scale Winners｜放大爆款</span>
+          <p>有历史投放数据时，学习 winner 信号并生成下一批测试。</p>
         </div>
-
-        <div class="creative-brief">
-          <div><span>Product Summary</span><p id="briefProductSummary">等待产品信息。</p></div>
-          <div><span>Target Audience</span><p id="briefAudience">等待目标用户描述。</p></div>
-          <div><span>Pain Points</span><p id="briefPainPoints">等待痛点输入。</p></div>
-          <div><span>Core Selling Angles</span><p id="briefSellingAngles">等待卖点类型。</p></div>
-          <div><span>Ad Structure</span><p id="briefAdStructure">Hook → Problem → Product demo → Proof → CTA</p></div>
-          <div><span>Hook Variants</span><p id="briefHooks">生成 3–5 个开头角度。</p></div>
-          <div><span>Visual Direction</span><p id="briefVisual">根据素材和限制决定画面。</p></div>
-          <div><span>Voiceover Tone</span><p id="briefVoiceover">自然、可信、短句。</p></div>
-          <div><span>CTA</span><p id="briefCta">根据广告目标生成 CTA。</p></div>
-          <div><span>A/B Testing Plan</span><p id="briefTesting">按 hook、卖点、CTA 做基础测试。</p></div>
-        </div>
-
-        <div class="output-preview">
-          <div class="output-head">
-            <i data-lucide="list-checks"></i>
-            <strong>预计输出</strong>
-          </div>
-          <ul id="outputList">
-            <li>广告结构拆解</li>
-            <li>Hook 与脚本变体</li>
-            <li>镜头分镜与字幕方向</li>
-            <li>下一批 A/B 测试建议</li>
-          </ul>
-        </div>
-
-        <div class="toast" id="toast" role="status" aria-live="polite"></div>
-      </aside>
+      </section>
     </main>
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <script src="./app.js"></script>
+    <script src="./agent.js"></script>
   </body>
 </html>
