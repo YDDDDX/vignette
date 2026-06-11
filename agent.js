@@ -7,6 +7,8 @@ const modeLabels = {
 const agentPrompt = document.querySelector("#agentPrompt");
 const runAgentButton = document.querySelector("#runAgent");
 const agentResult = document.querySelector("#agentResult");
+const deckSlides = Array.from(document.querySelectorAll(".showcase-slide"));
+const deckDots = Array.from(document.querySelectorAll(".deck-progress span"));
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -27,6 +29,28 @@ function persistAgentResult(result, description, recommendedMode) {
   sessionStorage.setItem("vignetteAgentDescription", description);
   sessionStorage.setItem("vignetteAgentSummary", JSON.stringify(result.summary || {}));
   sessionStorage.setItem("vignetteAgentBrief", JSON.stringify(result.creativeBrief || null));
+}
+
+function showDeckSlide(index) {
+  deckSlides.forEach((slide, slideIndex) => {
+    slide.classList.toggle("active", slideIndex === index);
+  });
+  deckDots.forEach((dot, dotIndex) => {
+    dot.classList.remove("active");
+    if (dotIndex === index) {
+      window.requestAnimationFrame(() => dot.classList.add("active"));
+    }
+  });
+}
+
+function initModeDeck() {
+  if (deckSlides.length <= 1) return;
+  let activeIndex = 0;
+  showDeckSlide(activeIndex);
+  window.setInterval(() => {
+    activeIndex = (activeIndex + 1) % deckSlides.length;
+    showDeckSlide(activeIndex);
+  }, 3200);
 }
 
 runAgentButton.addEventListener("click", async () => {
@@ -104,4 +128,5 @@ window.addEventListener("DOMContentLoaded", () => {
     sessionStorage.removeItem("vignettePendingPrompt");
   }
   window.lucide?.createIcons();
+  initModeDeck();
 });
