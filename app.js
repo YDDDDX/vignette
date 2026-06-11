@@ -1,7 +1,7 @@
 const modeMeta = {
   quick: {
-    name: "Quick Create",
-    description: "从产品信息和模板快速生成一批可测试广告。",
+    name: "Quick Create｜快速生成",
+    description: "从产品信息和基础模板快速生成一批可测试广告。",
     briefTitle: "从产品快速生成广告",
     briefCopy: "适合刚开始测试的卖家，只需要产品信息和基础素材，就能生成一批低门槛广告变体。",
     tags: ["低门槛", "模板生成", "快速测试"],
@@ -28,9 +28,10 @@ const modeMeta = {
     constraintsLabel: "不要出现的内容",
     constraintsPlaceholder: "例如 不要夸大疗效，不要使用医生形象，不要提及竞品品牌名。",
     outputs: ["10 条广告脚本", "Hook 与字幕方向", "镜头分镜建议", "基础 A/B 测试组合"],
+    structure: "Hook → Problem → Product demo → Proof → CTA",
   },
   remix: {
-    name: "Remix Reference",
+    name: "Remix Reference｜参考广告改写",
     description: "拆解参考广告的 hook、镜头和 CTA，再换成当前产品生成原创变体。",
     briefTitle: "按参考广告生成原创变体",
     briefCopy: "适合看到竞品或历史广告跑得好时，把它的结构拆出来，再替换成自己的产品逻辑。",
@@ -58,9 +59,10 @@ const modeMeta = {
     constraintsLabel: "原创与合规限制",
     constraintsPlaceholder: "例如 不要逐句照抄，不要使用竞品品牌名，不要复用原视频人物或商标。",
     outputs: ["参考广告结构拆解", "可复用创意蓝图", "20 条原创变体脚本", "镜头替换建议"],
+    structure: "Reference hook → Product swap → New proof → Original CTA",
   },
   scale: {
-    name: "Scale Winners",
+    name: "Scale Winners｜放大爆款",
     description: "结合历史广告和投放数据，学习有效结构并生成下一批测试素材。",
     briefTitle: "基于历史数据放大 winner",
     briefCopy: "适合已经有投放数据的团队，从历史广告里学习什么有效，再生成下一批测试素材。",
@@ -88,34 +90,7 @@ const modeMeta = {
     constraintsLabel: "测试边界",
     constraintsPlaceholder: "例如 不要改变核心卖点，不要扩大预算假设，不要混用不同市场的数据。",
     outputs: ["历史素材表现复盘", "有效创意模式总结", "下一批 50 条测试方向", "A/B 测试矩阵"],
-  },
-  agent: {
-    name: "Agent Mode",
-    description: "根据你的自然语言描述，自动判断该使用 Quick、Remix 还是 Scale。",
-    briefTitle: "让 Agent 先判断路径",
-    briefCopy: "适合你还不确定该从产品、参考广告还是历史数据开始时，先把需求讲清楚。",
-    tags: ["自动判断", "需求总结", "补充清单"],
-    assetsTitle: "Agent 识别中",
-    assetsHelp: "先在上方描述你的需求，Agent 会给出推荐模式和下一步。",
-    uploads: [
-      ["需求描述", "产品、素材、目标和约束"],
-      ["模式推荐", "Quick / Remix / Scale"],
-      ["信息缺口", "下一步需要补充什么"],
-    ],
-    referenceLabel: "Agent 分析结果",
-    referencePlaceholder: "Agent 会把你的需求总结到这里。",
-    strategyTitle: "Agent 策略",
-    strategyHelp: "先让 Agent 判断最适合的生成路径。",
-    styles: [
-      { name: "自动选择模式", note: "让 Agent 先判断从哪里开始", visual: "agent" },
-      { name: "总结需求", note: "提炼产品、目标和素材", visual: "plan" },
-      { name: "列出缺失信息", note: "告诉你还需要补什么", visual: "matrix" },
-      { name: "给下一步建议", note: "转入对应生成模式", visual: "cta" },
-    ],
-    quantity: "10",
-    constraintsLabel: "Agent 需要注意的约束",
-    constraintsPlaceholder: "例如 不要夸大疗效，需要面向美国 TikTok，不要使用竞品品牌名。",
-    outputs: ["推荐生成模式", "需求信息总结", "缺失信息清单", "下一步填写建议"],
+    structure: "Winner signal → Variant angle → Audience split → Proof → CTA test",
   },
 };
 
@@ -123,7 +98,6 @@ const form = document.querySelector("#intakeForm");
 const tabs = document.querySelectorAll(".tab");
 const toast = document.querySelector("#toast");
 const draftButton = document.querySelector("#saveDraft");
-const agentPanel = document.querySelector("#agentPanel");
 const agentPrompt = document.querySelector("#agentPrompt");
 const runAgentButton = document.querySelector("#runAgent");
 const agentResult = document.querySelector("#agentResult");
@@ -133,6 +107,7 @@ const prevStepButton = document.querySelector("#prevStep");
 const nextStepButton = document.querySelector("#nextStep");
 const submitBriefButton = document.querySelector("#submitBrief");
 let currentStep = 0;
+let latestAgentBrief = null;
 
 const preview = {
   modeName: document.querySelector("#modeName"),
@@ -141,6 +116,19 @@ const preview = {
   platform: document.querySelector("#previewPlatform"),
   style: document.querySelector("#previewStyle"),
   quantity: document.querySelector("#previewQuantity"),
+};
+
+const brief = {
+  productSummary: document.querySelector("#briefProductSummary"),
+  audience: document.querySelector("#briefAudience"),
+  painPoints: document.querySelector("#briefPainPoints"),
+  sellingAngles: document.querySelector("#briefSellingAngles"),
+  adStructure: document.querySelector("#briefAdStructure"),
+  hooks: document.querySelector("#briefHooks"),
+  visual: document.querySelector("#briefVisual"),
+  voiceover: document.querySelector("#briefVoiceover"),
+  cta: document.querySelector("#briefCta"),
+  testing: document.querySelector("#briefTesting"),
 };
 
 const modeFields = {
@@ -166,6 +154,28 @@ const modeFields = {
   outputList: document.querySelector("#outputList"),
 };
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function valueOr(value, fallback) {
+  const clean = String(value || "").trim();
+  return clean || fallback;
+}
+
+function currentMode() {
+  return document.querySelector(".tab.active")?.dataset.mode || "quick";
+}
+
+function checkedValues(name) {
+  return Array.from(form.querySelectorAll(`input[name='${name}']:checked`)).map((item) => item.value);
+}
+
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add("visible");
@@ -175,14 +185,91 @@ function showToast(message) {
   }, 2600);
 }
 
+function ctaFor(goal) {
+  const map = {
+    "Get purchases": "Drive viewers to product page with a direct shop-now CTA.",
+    "App installs": "Push viewers to install and try the app immediately.",
+    "Lead generation": "Ask viewers to claim a quote, demo, or free guide.",
+    "Brand awareness": "Prioritize recall, curiosity, and saves over hard selling.",
+  };
+  return map[goal] || map["Get purchases"];
+}
+
+function hookIdeas(product, promise, angle) {
+  const productName = product === "待填写" ? "this product" : product;
+  const benefit = promise || "the main benefit in seconds";
+  const angleMap = {
+    "Saves time": [`Stop wasting time on this daily problem.`, `I found a faster way to use ${productName}.`, `${benefit}, without adding another step.`],
+    "Saves money": [`Before you buy another expensive fix, watch this.`, `${productName} may replace the thing you keep rebuying.`, `This is the budget-friendly way to get ${benefit}.`],
+    "Looks better": [`The small upgrade that makes the result look cleaner.`, `I did not expect ${productName} to look this good.`, `${benefit}, but make it camera-ready.`],
+    "Solves pain": [`If this problem annoys you every day, start here.`, `The easiest way I found to handle this pain point.`, `${benefit}, without the usual frustration.`],
+    "Social proof": [`People are switching to ${productName} for one reason.`, `The comments were right about this product.`, `I tested the product everyone keeps talking about.`],
+    "Novelty / curiosity": [`I did not know this existed until today.`, `This product looks weird, but the use case is obvious.`, `Watch what happens when ${productName} solves the problem.`],
+  };
+  return angleMap[angle] || angleMap["Solves pain"];
+}
+
+function applyAgentBrief(agentBrief) {
+  if (!agentBrief || typeof agentBrief !== "object") return;
+  const mapping = [
+    ["productSummary", "productSummary"],
+    ["audience", "targetAudience"],
+    ["painPoints", "painPoints"],
+    ["sellingAngles", "coreSellingAngles"],
+    ["adStructure", "adStructure"],
+    ["hooks", "hookVariants"],
+    ["visual", "visualDirection"],
+    ["voiceover", "voiceoverTone"],
+    ["cta", "cta"],
+    ["testing", "abTestingPlan"],
+  ];
+  mapping.forEach(([target, source]) => {
+    const value = String(agentBrief[source] || "").trim();
+    if (value) brief[target].textContent = value;
+  });
+}
+
 function updatePreview() {
   const data = new FormData(form);
   const checkedStyle = form.querySelector("input[name='style']:checked");
+  const mode = currentMode();
+  const meta = modeMeta[mode];
+  const brand = valueOr(data.get("brand"), "待填写");
+  const platform = valueOr(data.get("platform"), "TikTok");
+  const style = checkedStyle ? checkedStyle.value : "UGC 口播";
+  const quantity = valueOr(data.get("quantity"), meta.quantity);
+  const promise = String(data.get("promise") || "").trim();
+  const audience = String(data.get("audience") || "").trim();
+  const market = valueOr(data.get("market"), "美国");
+  const adGoal = valueOr(data.get("adGoal"), "Get purchases");
+  const priceRange = valueOr(data.get("priceRange"), "Under $20");
+  const sellingAngle = valueOr(data.get("sellingAngle"), "Saves time");
+  const duration = valueOr(data.get("duration"), "15 秒");
+  const language = valueOr(data.get("language"), "英语");
+  const constraints = String(data.get("constraints") || "").trim();
+  const assetConstraints = checkedValues("assetConstraints");
+  const referenceLinks = String(data.get("referenceLinks") || "").trim();
+  const hooks = hookIdeas(brand, promise, sellingAngle);
 
-  preview.brand.textContent = data.get("brand") || "待填写";
-  preview.platform.textContent = data.get("platform") || "TikTok";
-  preview.style.textContent = checkedStyle ? checkedStyle.value : "UGC 口播";
-  preview.quantity.textContent = data.get("quantity") || "10";
+  preview.modeName.textContent = meta.name;
+  preview.modeDescription.textContent = meta.description;
+  preview.brand.textContent = brand;
+  preview.platform.textContent = platform;
+  preview.style.textContent = style;
+  preview.quantity.textContent = quantity;
+
+  brief.productSummary.textContent = `${brand} targeting ${market}. Price range: ${priceRange}. Core promise: ${promise || "等待一句话卖点"}.`;
+  brief.audience.textContent = audience || `面向 ${market} 的 ${platform} 用户，待补充具体人群画像、购买动机和使用场景。`;
+  brief.painPoints.textContent = audience
+    ? `从用户描述中提炼痛点，优先放大高频困扰、购买犹豫和现有替代方案的不满。`
+    : "等待输入目标用户与痛点；建议写清楚用户是谁、现在怎么解决、为什么不满意。";
+  brief.sellingAngles.textContent = `${sellingAngle} as the primary angle. Secondary proof should connect to ${promise || "product benefit"} and ${priceRange} pricing.`;
+  brief.adStructure.textContent = `${meta.structure} (${duration}, ${language}).`;
+  brief.hooks.textContent = hooks.join(" / ");
+  brief.visual.textContent = `${style} for ${platform}. ${assetConstraints.length ? assetConstraints.join("; ") : "Can use uploaded product assets and generated supporting scenes."}`;
+  brief.voiceover.textContent = `${language} voiceover, short spoken sentences, practical proof, no over-claiming.`;
+  brief.cta.textContent = ctaFor(adGoal);
+  brief.testing.textContent = `Generate ${quantity} variants by crossing hooks, ${sellingAngle} angle, CTA wording, and ${mode === "scale" ? "winner signals" : mode === "remix" ? "reference structures" : "template structures"}.${constraints ? ` Avoid: ${constraints}` : ""}${referenceLinks ? " Reference input will be used for structure only." : ""}`;
 }
 
 function updateStep() {
@@ -196,6 +283,52 @@ function updateStep() {
   prevStepButton.hidden = currentStep === 0;
   nextStepButton.hidden = currentStep === stepPanels.length - 1;
   submitBriefButton.hidden = currentStep !== stepPanels.length - 1;
+}
+
+function renderStyleChoices(styles) {
+  modeFields.styleChoices.innerHTML = styles
+    .map((style, index) => {
+      const checked = index === 0 ? " checked" : "";
+      const activeClass = index === 0 ? " checked" : "";
+      return `
+        <label class="choice${activeClass}">
+          <span class="choice-visual visual-${style.visual}" aria-hidden="true"></span>
+          <span class="choice-copy">
+            <strong>${escapeHtml(style.name)}</strong>
+            <small>${escapeHtml(style.note)}</small>
+          </span>
+          <input type="radio" name="style" value="${escapeHtml(style.name)}"${checked} />
+        </label>
+      `;
+    })
+    .join("");
+}
+
+function applyMode(mode) {
+  const meta = modeMeta[mode] || modeMeta.quick;
+  preview.modeName.textContent = meta.name;
+  preview.modeDescription.textContent = meta.description;
+  modeFields.briefTitle.textContent = meta.briefTitle;
+  modeFields.briefCopy.textContent = meta.briefCopy;
+  modeFields.tags.innerHTML = meta.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("");
+  modeFields.assetsTitle.textContent = meta.assetsTitle;
+  modeFields.assetsHelp.textContent = meta.assetsHelp;
+  modeFields.productAssetsLabel.textContent = meta.uploads[0][0];
+  modeFields.productAssetsHint.textContent = meta.uploads[0][1];
+  modeFields.referenceAdsLabel.textContent = meta.uploads[1][0];
+  modeFields.referenceAdsHint.textContent = meta.uploads[1][1];
+  modeFields.performanceDataLabel.textContent = meta.uploads[2][0];
+  modeFields.performanceDataHint.textContent = meta.uploads[2][1];
+  modeFields.referenceLabel.textContent = meta.referenceLabel;
+  modeFields.referenceLinks.placeholder = meta.referencePlaceholder;
+  modeFields.strategyTitle.textContent = meta.strategyTitle;
+  modeFields.strategyHelp.textContent = meta.strategyHelp;
+  modeFields.quantity.value = meta.quantity;
+  modeFields.constraintsLabel.textContent = meta.constraintsLabel;
+  modeFields.constraints.placeholder = meta.constraintsPlaceholder;
+  modeFields.outputList.innerHTML = meta.outputs.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  renderStyleChoices(meta.styles);
+  updatePreview();
 }
 
 function setModeTab(mode) {
@@ -215,59 +348,9 @@ function validateCurrentStep() {
   return true;
 }
 
-function renderStyleChoices(styles) {
-  modeFields.styleChoices.innerHTML = styles
-    .map((style, index) => {
-      const checked = index === 0 ? " checked" : "";
-      const activeClass = index === 0 ? " checked" : "";
-      return `
-        <label class="choice${activeClass}">
-          <span class="choice-visual visual-${style.visual}" aria-hidden="true"></span>
-          <span class="choice-copy">
-            <strong>${style.name}</strong>
-            <small>${style.note}</small>
-          </span>
-          <input type="radio" name="style" value="${style.name}"${checked} />
-        </label>
-      `;
-    })
-    .join("");
-}
-
-function applyMode(mode) {
-  const meta = modeMeta[mode];
-  const isAgent = mode === "agent";
-  agentPanel.hidden = !isAgent;
-  form.hidden = isAgent;
-  preview.modeName.textContent = meta.name;
-  preview.modeDescription.textContent = meta.description;
-  modeFields.briefTitle.textContent = meta.briefTitle;
-  modeFields.briefCopy.textContent = meta.briefCopy;
-  modeFields.tags.innerHTML = meta.tags.map((tag) => `<span>${tag}</span>`).join("");
-  modeFields.assetsTitle.textContent = meta.assetsTitle;
-  modeFields.assetsHelp.textContent = meta.assetsHelp;
-  modeFields.productAssetsLabel.textContent = meta.uploads[0][0];
-  modeFields.productAssetsHint.textContent = meta.uploads[0][1];
-  modeFields.referenceAdsLabel.textContent = meta.uploads[1][0];
-  modeFields.referenceAdsHint.textContent = meta.uploads[1][1];
-  modeFields.performanceDataLabel.textContent = meta.uploads[2][0];
-  modeFields.performanceDataHint.textContent = meta.uploads[2][1];
-  modeFields.referenceLabel.textContent = meta.referenceLabel;
-  modeFields.referenceLinks.placeholder = meta.referencePlaceholder;
-  modeFields.strategyTitle.textContent = meta.strategyTitle;
-  modeFields.strategyHelp.textContent = meta.strategyHelp;
-  modeFields.quantity.value = meta.quantity;
-  modeFields.constraintsLabel.textContent = meta.constraintsLabel;
-  modeFields.constraints.placeholder = meta.constraintsPlaceholder;
-  modeFields.outputList.innerHTML = meta.outputs.map((item) => `<li>${item}</li>`).join("");
-  renderStyleChoices(meta.styles);
-  updatePreview();
-}
-
 tabs.forEach((tab) => {
   tab.addEventListener("click", () => {
-    const mode = tab.dataset.mode;
-    setModeTab(mode);
+    setModeTab(tab.dataset.mode);
   });
 });
 
@@ -315,31 +398,42 @@ runAgentButton.addEventListener("click", async () => {
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || "Agent 分析失败");
 
-    const modeName = modeMeta[result.recommendedMode]?.name || result.recommendedMode;
+    const recommendedMode = modeMeta[result.recommendedMode] ? result.recommendedMode : "quick";
+    const modeName = modeMeta[recommendedMode].name;
     const missing = Array.isArray(result.missingInfo) ? result.missingInfo : [];
+    latestAgentBrief = result.creativeBrief || null;
+    applyAgentBrief(latestAgentBrief);
     agentResult.innerHTML = `
       <div class="agent-result-head">
         <span>推荐模式</span>
-        <strong>${modeName}</strong>
-        <small>Confidence ${result.confidence ?? "-"}%</small>
+        <strong>${escapeHtml(modeName)}</strong>
+        <small>Confidence ${escapeHtml(result.confidence ?? "-")}%</small>
       </div>
-      <p>${result.reason || ""}</p>
+      <p>${escapeHtml(result.reason || "")}</p>
       <dl>
-        <div><dt>产品</dt><dd>${result.summary?.product || "未识别"}</dd></div>
-        <div><dt>目标</dt><dd>${result.summary?.goal || "未识别"}</dd></div>
-        <div><dt>素材</dt><dd>${result.summary?.availableAssets || "未识别"}</dd></div>
-        <div><dt>受众</dt><dd>${result.summary?.audience || "未识别"}</dd></div>
+        <div><dt>Product Summary</dt><dd>${escapeHtml(result.summary?.product || "未识别")}</dd></div>
+        <div><dt>Goal</dt><dd>${escapeHtml(result.summary?.goal || "未识别")}</dd></div>
+        <div><dt>Assets</dt><dd>${escapeHtml(result.summary?.availableAssets || "未识别")}</dd></div>
+        <div><dt>Audience</dt><dd>${escapeHtml(result.summary?.audience || "未识别")}</dd></div>
       </dl>
+      ${
+        latestAgentBrief
+          ? `<div class="agent-brief-note">
+              <strong>已生成 Live Brief</strong>
+              <span>${escapeHtml(latestAgentBrief.hookVariants || latestAgentBrief.coreSellingAngles || "右侧已更新完整创意简报。")}</span>
+            </div>`
+          : ""
+      }
       <div class="agent-missing">
         <strong>还需要补充</strong>
-        <ul>${missing.map((item) => `<li>${item}</li>`).join("") || "<li>暂无</li>"}</ul>
+        <ul>${missing.map((item) => `<li>${escapeHtml(item)}</li>`).join("") || "<li>暂无</li>"}</ul>
       </div>
-      <button class="primary-button" type="button" data-apply-agent-mode="${result.recommendedMode}">
-        切到 ${modeName}
+      <button class="primary-button" type="button" data-apply-agent-mode="${recommendedMode}">
+        使用 ${escapeHtml(modeName)}
       </button>
     `;
   } catch (error) {
-    agentResult.innerHTML = `<p>${error.message}</p>`;
+    agentResult.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
   } finally {
     runAgentButton.disabled = false;
   }
@@ -351,13 +445,16 @@ agentResult.addEventListener("click", (event) => {
   const mode = button.dataset.applyAgentMode;
   if (!modeMeta[mode]) return;
   setModeTab(mode);
+  applyAgentBrief(latestAgentBrief);
   currentStep = 0;
   updateStep();
+  document.querySelector(".manual-mode-head").scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 draftButton.addEventListener("click", () => {
   const data = Object.fromEntries(new FormData(form).entries());
-  data.mode = document.querySelector(".tab.active").dataset.mode;
+  data.mode = currentMode();
+  data.assetConstraints = checkedValues("assetConstraints");
   localStorage.setItem("vignetteDraft", JSON.stringify(data));
   showToast("草稿已保存在当前浏览器。");
 });
@@ -379,7 +476,8 @@ form.addEventListener("submit", (event) => {
   if (!form.reportValidity()) return;
 
   const payload = Object.fromEntries(new FormData(form).entries());
-  payload.mode = document.querySelector(".tab.active").dataset.mode;
+  payload.mode = currentMode();
+  payload.assetConstraints = checkedValues("assetConstraints");
   console.table(payload);
   showToast("创意 Brief 已生成，数据已输出到浏览器控制台。");
 });

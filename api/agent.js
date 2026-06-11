@@ -48,6 +48,18 @@ JSON schema:
     "availableAssets": "已有素材/数据总结",
     "audience": "目标用户总结"
   },
+  "creativeBrief": {
+    "productSummary": "Product Summary",
+    "targetAudience": "Target Audience",
+    "painPoints": "Pain Points",
+    "coreSellingAngles": "Core Selling Angles",
+    "adStructure": "Ad Structure",
+    "hookVariants": "3-5 个 Hook Variants，用 / 分隔",
+    "visualDirection": "Visual Direction",
+    "voiceoverTone": "Voiceover Tone",
+    "cta": "CTA",
+    "abTestingPlan": "A/B Testing Plan"
+  },
   "missingInfo": ["还需要补充的信息"],
   "suggestedNextStep": "下一步建议"
 };

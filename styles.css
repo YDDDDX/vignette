@@ -2286,6 +2286,25 @@ textarea:focus {
   line-height: 1.45;
 }
 
+.agent-brief-note {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.agent-brief-note strong {
+  color: #1d1d1f;
+  font-size: 14px;
+}
+
+.agent-brief-note span {
+  color: #6e6e73;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .agent-missing strong {
   display: block;
   margin-bottom: 8px;
@@ -2297,10 +2316,6 @@ textarea:focus {
   color: #6e6e73;
 }
 
-.intake-page .tabs {
-  grid-template-columns: repeat(4, 1fr);
-}
-
 .intake-page .agent-panel {
   border: 0;
   border-radius: 28px;
@@ -2308,8 +2323,104 @@ textarea:focus {
   background: #ffffff;
 }
 
+.intake-page .manual-mode-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 4px 4px 10px;
+}
+
+.intake-page .manual-mode-head span {
+  color: #6e6e73;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.intake-page .manual-mode-head strong {
+  color: #1d1d1f;
+  font-size: 16px;
+}
+
+.intake-page .tabs {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.intake-page .agent-panel {
+  background:
+    linear-gradient(135deg, rgba(0, 113, 227, 0.08), transparent 42%),
+    #ffffff;
+}
+
+.intake-page .agent-panel textarea {
+  min-height: 128px;
+  font-size: 15px;
+}
+
+.intake-page .preview-panel {
+  overflow-y: auto;
+}
+
+.intake-page .creative-brief {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 0;
+  border-radius: 22px;
+  background: #f5f5f7;
+}
+
+.intake-page .creative-brief div {
+  padding: 14px;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.intake-page .creative-brief span {
+  display: block;
+  margin-bottom: 7px;
+  color: #6e6e73;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.intake-page .creative-brief p {
+  margin: 0;
+  color: #1d1d1f;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.intake-page .constraint-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.intake-page .constraint-grid label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f5f5f7;
+  color: #1d1d1f;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.intake-page .constraint-grid input {
+  width: 16px;
+  height: 16px;
+}
+
 @media (max-width: 860px) {
   .intake-page .tabs,
+  .intake-page .constraint-grid,
   .agent-result dl {
     grid-template-columns: 1fr;
   }
@@ -2317,5 +2428,11 @@ textarea:focus {
   .intake-page .agent-panel {
     border-radius: 24px;
     padding: 24px 18px;
+  }
+
+  .intake-page .manual-mode-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
   }
 }
