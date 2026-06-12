@@ -177,6 +177,65 @@ function checkedValues(name) {
   return Array.from(form.querySelectorAll(`input[name='${name}']:checked`)).map((item) => item.value);
 }
 
+function formDataSnapshot() {
+  const snapshot = {};
+  const data = new FormData(form);
+  data.forEach((value, key) => {
+    if (value instanceof File) {
+      if (!value.name) return;
+      const fileInfo = { name: value.name, size: value.size, type: value.type };
+      snapshot[key] = snapshot[key] ? [].concat(snapshot[key], fileInfo) : fileInfo;
+      return;
+    }
+    snapshot[key] = snapshot[key] ? [].concat(snapshot[key], value) : value;
+  });
+  return snapshot;
+}
+
+function textFrom(element) {
+  return String(element?.textContent || "").trim();
+}
+
+function buildBriefHistoryEntry() {
+  const data = formDataSnapshot();
+  const mode = currentMode();
+  const meta = modeMeta[mode] || modeMeta.quick;
+  const assetConstraints = checkedValues("assetConstraints");
+  const brand = valueOr(data.brand, "未填写品牌");
+  const style = textFrom(preview.style) || data.style || "UGC 口播";
+  const quantity = textFrom(preview.quantity) || data.quantity || meta.quantity;
+
+  return {
+    mode,
+    modeName: meta.name,
+    brand,
+    platform: valueOr(data.platform, "TikTok"),
+    style,
+    quantity,
+    title: `${brand} - ${meta.name}`,
+    summary: textFrom(brief.productSummary),
+    formData: {
+      ...data,
+      mode,
+      assetConstraints,
+    },
+    assetConstraints,
+    brief: {
+      productSummary: textFrom(brief.productSummary),
+      audience: textFrom(brief.audience),
+      painPoints: textFrom(brief.painPoints),
+      sellingAngles: textFrom(brief.sellingAngles),
+      hooks: textFrom(brief.hooks),
+      scriptStructure: textFrom(brief.scriptStructure),
+      shotList: textFrom(brief.shotList),
+      captionStyle: textFrom(brief.captionStyle),
+      ctaDirection: textFrom(brief.ctaDirection),
+      riskNotes: textFrom(brief.riskNotes),
+      testing: textFrom(brief.testing),
+    },
+  };
+}
+
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add("visible");
@@ -402,15 +461,30 @@ form.addEventListener("reset", () => {
   }, 0);
 });
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!form.reportValidity()) return;
 
-  const payload = Object.fromEntries(new FormData(form).entries());
-  payload.mode = currentMode();
-  payload.assetConstraints = checkedValues("assetConstraints");
-  console.table(payload);
-  showToast("创意 Brief 已生成，数据已输出到浏览器控制台。");
+  const payload = buildBriefHistoryEntry();
+  console.table(payload.formData);
+
+  if (!window.vignetteHistory) {
+    showToast("创意 Brief 已生成，但历史模块未加载。请刷新后重试。");
+    return;
+  }
+
+  submitBriefButton.disabled = true;
+  try {
+    const result = await window.vignetteHistory.saveBrief(payload);
+    const message = result.cloudSaved
+      ? "创意 Brief 已保存到历史记录，并已同步账号。"
+      : "创意 Brief 已保存到本地历史记录。";
+    showToast(message);
+  } catch (error) {
+    showToast(error.message || "保存失败，请稍后再试。");
+  } finally {
+    submitBriefButton.disabled = false;
+  }
 });
 
 window.addEventListener("DOMContentLoaded", async () => {

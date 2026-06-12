@@ -69,6 +69,10 @@
           </a>
           <div class="workspace-brand-actions">
             <span>Generate, test, and scale winning video ads</span>
+            <a class="account-link history-link" href="./history.html">
+              <i data-lucide="clock-3"></i>
+              历史
+            </a>
             <a class="account-link" href="./login.html?returnTo=/details.html" data-auth-link data-auth-label="登录保存记录">
               <i data-lucide="user-round"></i>
               登录保存记录
@@ -88,6 +92,9 @@
           <div class="header-actions">
             <a class="icon-button" href="./intake.html" aria-label="返回 Agent 入口" title="返回 Agent 入口">
               <i data-lucide="arrow-left"></i>
+            </a>
+            <a class="icon-button" href="./history.html" aria-label="查看历史记录" title="查看历史记录">
+              <i data-lucide="clock-3"></i>
             </a>
             <button class="icon-button" type="button" aria-label="保存草稿" title="保存草稿" id="saveDraft">
               <i data-lucide="save"></i>
@@ -449,6 +456,7 @@
     <script src="./vendor/supabase.min.js"></script>
     <script src="./auth.js"></script>
     <script src="./auth-ui.js?v=20260612"></script>
+    <script src="./history-store.js?v=20260612"></script>
     <script src="./app.js"></script>
   </body>
 </html>
