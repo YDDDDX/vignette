@@ -10,28 +10,40 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=20260612-login" />
   </head>
   <body class="login-page">
     <main class="login-shell">
-      <a class="cover-logo" href="./index.html" aria-label="Vignette 首页">
-        <span class="brand-mark" aria-hidden="true">V</span>
-        <strong>Vignette</strong>
-      </a>
-
       <section class="login-card" aria-labelledby="loginTitle">
-        <p class="eyebrow">Account</p>
-        <h1 id="loginTitle">登录后继续生成广告。</h1>
-        <p>你的 Agent 分析、创意简报和后续生成记录会绑定到账号。现在也可以先跳过登录完成演示。</p>
+        <div class="login-intro">
+          <a class="cover-logo" href="./index.html" aria-label="Vignette 首页">
+            <span class="brand-mark" aria-hidden="true">V</span>
+            <strong>Vignette</strong>
+          </a>
+          <div>
+            <p class="eyebrow">Account</p>
+            <h1 id="loginTitle">保存你的广告生成记录。</h1>
+            <p>登录后可以保留 Agent 分析、创意简报和后续生成记录。演示时也可以直接跳过。</p>
+          </div>
 
-        <a class="primary-button login-continue" href="./intake.html" id="continueWithoutLogin">
-          <i data-lucide="arrow-right"></i>
-          继续体验
-        </a>
+          <div class="login-benefits" aria-label="登录权益">
+            <span><i data-lucide="file-check-2"></i> 保存 Brief</span>
+            <span><i data-lucide="history"></i> 回看历史</span>
+            <span><i data-lucide="sparkles"></i> 继续生成</span>
+          </div>
 
-        <div class="login-divider"><span>邮箱账号</span></div>
+          <a class="secondary-button login-continue" href="./intake.html" id="continueWithoutLogin">
+            先继续体验
+            <i data-lucide="arrow-right"></i>
+          </a>
+        </div>
 
-        <div class="grid two login-fields">
+        <div class="login-form-panel">
+          <div class="login-form-head">
+            <span>邮箱账号</span>
+            <small>推荐用于 demo</small>
+          </div>
+
           <label class="field">
             <span>邮箱</span>
             <input id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email" />
@@ -40,34 +52,32 @@
             <span>密码</span>
             <input id="loginPassword" type="password" placeholder="至少 6 位" autocomplete="current-password" />
           </label>
-        </div>
 
-        <div class="login-actions">
-          <button class="primary-button" type="button" id="loginPasswordButton">
+          <button class="primary-button login-submit" type="button" id="loginPasswordButton">
             <i data-lucide="log-in"></i>
             登录
           </button>
-          <button class="secondary-button" type="button" id="signupPasswordButton">
+          <button class="secondary-button login-register" type="button" id="signupPasswordButton">
             注册账号
             <i data-lucide="user-plus"></i>
           </button>
-        </div>
 
-        <details class="magic-link-panel">
-          <summary>使用邮箱魔法链接</summary>
-          <p>如果密码登录不方便，可以发送一次性登录链接。请检查垃圾邮件箱。</p>
-          <button class="secondary-button login-email" type="button" id="loginEmailButton">
-            发送魔法链接
-            <i data-lucide="mail"></i>
+          <details class="magic-link-panel">
+            <summary>使用邮箱魔法链接</summary>
+            <p>如果密码登录不方便，可以发送一次性登录链接。请检查垃圾邮件箱。</p>
+            <button class="secondary-button login-email" type="button" id="loginEmailButton">
+              发送魔法链接
+              <i data-lucide="mail"></i>
+            </button>
+          </details>
+
+          <button class="secondary-button login-google" type="button" id="loginGoogle" hidden>
+            <i data-lucide="log-in"></i>
+            使用 Google 登录
           </button>
-        </details>
 
-        <button class="secondary-button login-google" type="button" id="loginGoogle" hidden>
-          <i data-lucide="log-in"></i>
-          使用 Google 登录
-        </button>
-
-        <p class="login-status" id="loginStatus" role="status" aria-live="polite"></p>
+          <p class="login-status" id="loginStatus" role="status" aria-live="polite"></p>
+        </div>
       </section>
     </main>
 
