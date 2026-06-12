@@ -123,6 +123,37 @@ a {
   box-shadow: 0 8px 22px rgba(29, 29, 31, 0.08);
 }
 
+.account-link.signed-in {
+  max-width: min(230px, 48vw);
+  cursor: default;
+}
+
+.account-link.signed-in span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-signout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(29, 29, 31, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #1d1d1f;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.account-signout svg {
+  width: 15px;
+  height: 15px;
+}
+
 .nav-action svg {
   width: 17px;
   height: 17px;
@@ -2910,12 +2941,48 @@ textarea:focus {
 }
 
 .login-google,
-.login-email {
+.login-email,
+.login-continue {
   width: 100%;
   border-radius: 999px;
 }
 
-.skip-login-link {
+.login-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.login-fields {
+  gap: 12px;
+}
+
+.magic-link-panel {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 22px;
+  background: #f5f5f7;
+}
+
+.magic-link-panel summary {
+  cursor: pointer;
+  color: #1d1d1f;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.magic-link-panel p {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.magic-link-panel .login-email {
+  margin-top: 12px;
+}
+
+.skip-login-link,
+.login-card .login-continue {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2926,7 +2993,8 @@ textarea:focus {
   font-weight: 800;
 }
 
-.skip-login-link svg {
+.skip-login-link svg,
+.login-card .login-continue svg {
   width: 17px;
   height: 17px;
 }
@@ -2952,4 +3020,15 @@ textarea:focus {
   min-height: 22px;
   font-size: 13px;
   font-weight: 700;
+}
+
+@media (max-width: 520px) {
+  .login-actions,
+  .login-card .grid.two {
+    grid-template-columns: 1fr;
+  }
+
+  .account-link.signed-in {
+    max-width: 180px;
+  }
 }

@@ -22,28 +22,50 @@
       <section class="login-card" aria-labelledby="loginTitle">
         <p class="eyebrow">Account</p>
         <h1 id="loginTitle">登录后继续生成广告。</h1>
-        <p>你的 Agent 分析、创意简报和后续生成记录会绑定到账号。</p>
+        <p>你的 Agent 分析、创意简报和后续生成记录会绑定到账号。现在也可以先跳过登录完成演示。</p>
 
-        <button class="primary-button login-google" type="button" id="loginGoogle">
+        <a class="primary-button login-continue" href="./intake.html" id="continueWithoutLogin">
+          <i data-lucide="arrow-right"></i>
+          继续体验
+        </a>
+
+        <div class="login-divider"><span>邮箱账号</span></div>
+
+        <div class="grid two login-fields">
+          <label class="field">
+            <span>邮箱</span>
+            <input id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email" />
+          </label>
+          <label class="field">
+            <span>密码</span>
+            <input id="loginPassword" type="password" placeholder="至少 6 位" autocomplete="current-password" />
+          </label>
+        </div>
+
+        <div class="login-actions">
+          <button class="primary-button" type="button" id="loginPasswordButton">
+            <i data-lucide="log-in"></i>
+            登录
+          </button>
+          <button class="secondary-button" type="button" id="signupPasswordButton">
+            注册账号
+            <i data-lucide="user-plus"></i>
+          </button>
+        </div>
+
+        <details class="magic-link-panel">
+          <summary>使用邮箱魔法链接</summary>
+          <p>如果密码登录不方便，可以发送一次性登录链接。请检查垃圾邮件箱。</p>
+          <button class="secondary-button login-email" type="button" id="loginEmailButton">
+            发送魔法链接
+            <i data-lucide="mail"></i>
+          </button>
+        </details>
+
+        <button class="secondary-button login-google" type="button" id="loginGoogle" hidden>
           <i data-lucide="log-in"></i>
           使用 Google 登录
         </button>
-
-        <div class="login-divider"><span>或使用邮箱魔法链接</span></div>
-
-        <label class="field">
-          <span>邮箱</span>
-          <input id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email" />
-        </label>
-        <button class="secondary-button login-email" type="button" id="loginEmailButton">
-          发送登录链接
-          <i data-lucide="mail"></i>
-        </button>
-
-        <a class="skip-login-link" href="./intake.html">
-          暂时跳过，直接体验
-          <i data-lucide="arrow-right"></i>
-        </a>
 
         <p class="login-status" id="loginStatus" role="status" aria-live="polite"></p>
       </section>
