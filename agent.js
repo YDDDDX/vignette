@@ -1,7 +1,7 @@
 const modeLabels = {
   quick: "Quick Create｜快速生成",
   remix: "Remix Reference｜参考广告改写",
-  scale: "Scale Winners｜放大爆款",
+  scale: "Scale Winners｜爆款放大",
 };
 
 const agentPrompt = document.querySelector("#agentPrompt");

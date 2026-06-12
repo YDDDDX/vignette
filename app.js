@@ -62,7 +62,7 @@ const modeMeta = {
     structure: "Reference hook → Product swap → New proof → Original CTA",
   },
   scale: {
-    name: "Scale Winners｜放大爆款",
+    name: "Scale Winners｜爆款放大",
     description: "结合历史广告和投放数据，学习有效结构并生成下一批测试素材。",
     briefTitle: "基于历史数据放大 winner",
     briefCopy: "适合已经有投放数据的团队，从历史广告里学习什么有效，再生成下一批测试素材。",
@@ -123,11 +123,12 @@ const brief = {
   audience: document.querySelector("#briefAudience"),
   painPoints: document.querySelector("#briefPainPoints"),
   sellingAngles: document.querySelector("#briefSellingAngles"),
-  adStructure: document.querySelector("#briefAdStructure"),
+  scriptStructure: document.querySelector("#briefScriptStructure"),
   hooks: document.querySelector("#briefHooks"),
-  visual: document.querySelector("#briefVisual"),
-  voiceover: document.querySelector("#briefVoiceover"),
-  cta: document.querySelector("#briefCta"),
+  shotList: document.querySelector("#briefShotList"),
+  captionStyle: document.querySelector("#briefCaptionStyle"),
+  ctaDirection: document.querySelector("#briefCtaDirection"),
+  riskNotes: document.querySelector("#briefRiskNotes"),
   testing: document.querySelector("#briefTesting"),
 };
 
@@ -187,45 +188,48 @@ function showToast(message) {
 
 function ctaFor(goal) {
   const map = {
-    "Get purchases": "Drive viewers to product page with a direct shop-now CTA.",
+    Purchases: "Drive viewers to product page with a direct shop-now CTA.",
     "App installs": "Push viewers to install and try the app immediately.",
-    "Lead generation": "Ask viewers to claim a quote, demo, or free guide.",
-    "Brand awareness": "Prioritize recall, curiosity, and saves over hard selling.",
+    Leads: "Ask viewers to claim a quote, demo, or free guide.",
+    Awareness: "Prioritize recall, curiosity, and saves over hard selling.",
+    Retargeting: "Remind warm audiences of the offer, proof, and reason to act now.",
   };
-  return map[goal] || map["Get purchases"];
+  return map[goal] || map.Purchases;
 }
 
 function hookIdeas(product, promise, angle) {
   const productName = product === "待填写" ? "this product" : product;
   const benefit = promise || "the main benefit in seconds";
   const angleMap = {
-    "Saves time": [`Stop wasting time on this daily problem.`, `I found a faster way to use ${productName}.`, `${benefit}, without adding another step.`],
-    "Saves money": [`Before you buy another expensive fix, watch this.`, `${productName} may replace the thing you keep rebuying.`, `This is the budget-friendly way to get ${benefit}.`],
-    "Looks better": [`The small upgrade that makes the result look cleaner.`, `I did not expect ${productName} to look this good.`, `${benefit}, but make it camera-ready.`],
-    "Solves pain": [`If this problem annoys you every day, start here.`, `The easiest way I found to handle this pain point.`, `${benefit}, without the usual frustration.`],
+    "Save time": [`Stop wasting time on this daily problem.`, `I found a faster way to use ${productName}.`, `${benefit}, without adding another step.`],
+    "Save money": [`Before you buy another expensive fix, watch this.`, `${productName} may replace the thing you keep rebuying.`, `This is the budget-friendly way to get ${benefit}.`],
+    "Look better": [`The small upgrade that makes the result look cleaner.`, `I did not expect ${productName} to look this good.`, `${benefit}, but make it camera-ready.`],
+    "Solve pain": [`If this problem annoys you every day, start here.`, `The easiest way I found to handle this pain point.`, `${benefit}, without the usual frustration.`],
     "Social proof": [`People are switching to ${productName} for one reason.`, `The comments were right about this product.`, `I tested the product everyone keeps talking about.`],
-    "Novelty / curiosity": [`I did not know this existed until today.`, `This product looks weird, but the use case is obvious.`, `Watch what happens when ${productName} solves the problem.`],
+    Curiosity: [`I did not know this existed until today.`, `This product looks weird, but the use case is obvious.`, `Watch what happens when ${productName} solves the problem.`],
+    "Fear of missing out": [`This offer is easy to miss, but worth checking now.`, `I would not wait if this solves your problem.`, `Here is why people are buying ${productName} before it sells out.`],
   };
-  return angleMap[angle] || angleMap["Solves pain"];
+  return angleMap[angle] || angleMap["Solve pain"];
 }
 
 function applyAgentBrief(agentBrief) {
   if (!agentBrief || typeof agentBrief !== "object") return;
   const mapping = [
-    ["productSummary", "productSummary"],
-    ["audience", "targetAudience"],
-    ["painPoints", "painPoints"],
-    ["sellingAngles", "coreSellingAngles"],
-    ["adStructure", "adStructure"],
-    ["hooks", "hookVariants"],
-    ["visual", "visualDirection"],
-    ["voiceover", "voiceoverTone"],
-    ["cta", "cta"],
-    ["testing", "abTestingPlan"],
+    ["productSummary", ["productSummary"]],
+    ["audience", ["targetAudience", "audience"]],
+    ["painPoints", ["painPoints"]],
+    ["sellingAngles", ["coreSellingAngles", "sellingAngles"]],
+    ["hooks", ["hookVariants", "hooks"]],
+    ["scriptStructure", ["scriptStructure", "adStructure"]],
+    ["shotList", ["shotList", "visualDirection"]],
+    ["captionStyle", ["captionStyle", "voiceoverTone"]],
+    ["ctaDirection", ["ctaDirection", "cta"]],
+    ["riskNotes", ["riskComplianceNotes", "riskNotes", "complianceNotes"]],
+    ["testing", ["abTestingPlan", "testingPlan"]],
   ];
-  mapping.forEach(([target, source]) => {
-    const value = String(agentBrief[source] || "").trim();
-    if (value) brief[target].textContent = value;
+  mapping.forEach(([target, sources]) => {
+    const value = sources.map((source) => String(agentBrief[source] || "").trim()).find(Boolean);
+    if (value && brief[target]) brief[target].textContent = value;
   });
 }
 
@@ -241,9 +245,9 @@ function updatePreview() {
   const promise = String(data.get("promise") || "").trim();
   const audience = String(data.get("audience") || "").trim();
   const market = valueOr(data.get("market"), "美国");
-  const adGoal = valueOr(data.get("adGoal"), "Get purchases");
-  const priceRange = valueOr(data.get("priceRange"), "Under $20");
-  const sellingAngle = valueOr(data.get("sellingAngle"), "Saves time");
+  const adGoal = valueOr(data.get("adGoal"), "Purchases");
+  const mainOffer = valueOr(data.get("mainOffer"), "No offer");
+  const sellingAngle = valueOr(data.get("sellingAngle"), "Save time");
   const duration = valueOr(data.get("duration"), "15 秒");
   const language = valueOr(data.get("language"), "英语");
   const constraints = String(data.get("constraints") || "").trim();
@@ -258,18 +262,19 @@ function updatePreview() {
   preview.style.textContent = style;
   preview.quantity.textContent = quantity;
 
-  brief.productSummary.textContent = `${brand} targeting ${market}. Price range: ${priceRange}. Core promise: ${promise || "等待一句话卖点"}.`;
+  brief.productSummary.textContent = `${brand} targeting ${market}. Campaign goal: ${adGoal}. Main offer: ${mainOffer}. Core promise: ${promise || "等待一句话卖点"}.`;
   brief.audience.textContent = audience || `面向 ${market} 的 ${platform} 用户，待补充具体人群画像、购买动机和使用场景。`;
   brief.painPoints.textContent = audience
     ? `从用户描述中提炼痛点，优先放大高频困扰、购买犹豫和现有替代方案的不满。`
     : "等待输入目标用户与痛点；建议写清楚用户是谁、现在怎么解决、为什么不满意。";
-  brief.sellingAngles.textContent = `${sellingAngle} as the primary angle. Secondary proof should connect to ${promise || "product benefit"} and ${priceRange} pricing.`;
-  brief.adStructure.textContent = `${meta.structure} (${duration}, ${language}).`;
+  brief.sellingAngles.textContent = `${sellingAngle} as the primary angle. Offer framing: ${mainOffer}. Secondary proof should connect to ${promise || "product benefit"} and campaign goal ${adGoal}.`;
   brief.hooks.textContent = hooks.join(" / ");
-  brief.visual.textContent = `${style} for ${platform}. ${assetConstraints.length ? assetConstraints.join("; ") : "Can use uploaded product assets and generated supporting scenes."}`;
-  brief.voiceover.textContent = `${language} voiceover, short spoken sentences, practical proof, no over-claiming.`;
-  brief.cta.textContent = ctaFor(adGoal);
-  brief.testing.textContent = `Generate ${quantity} variants by crossing hooks, ${sellingAngle} angle, CTA wording, and ${mode === "scale" ? "winner signals" : mode === "remix" ? "reference structures" : "template structures"}.${constraints ? ` Avoid: ${constraints}` : ""}${referenceLinks ? " Reference input will be used for structure only." : ""}`;
+  brief.scriptStructure.textContent = `${meta.structure} (${duration}, ${language}). Keep each scene tied to one claim, one proof point, and one CTA.`;
+  brief.shotList.textContent = `${style} for ${platform}: opening hook shot, product-in-use shot, proof/detail shot, objection-handling shot, CTA end card.${referenceLinks ? " Reference input will be used for structure only." : ""}`;
+  brief.captionStyle.textContent = `${language} captions with short spoken lines, bold first 2 seconds, benefit-led subtitles, and clear visual emphasis on the offer.`;
+  brief.ctaDirection.textContent = ctaFor(adGoal);
+  brief.riskNotes.textContent = `${assetConstraints.length ? assetConstraints.join("; ") : "No extra compliance constraints selected."}${constraints ? ` Extra avoid list: ${constraints}` : ""}`;
+  brief.testing.textContent = `Generate ${quantity} variants by crossing hooks, ${sellingAngle} angle, ${mainOffer} offer framing, CTA wording, and ${mode === "scale" ? "winner signals" : mode === "remix" ? "reference structures" : "template structures"}.`;
 }
 
 function updateStep() {

@@ -108,7 +108,7 @@
           <button class="tab" type="button" role="tab" aria-selected="false" data-mode="scale">
             <span class="tab-visual visual-scale" aria-hidden="true"></span>
             <span class="tab-copy">
-              <strong>Scale Winners｜放大爆款</strong>
+              <strong>Scale Winners｜爆款放大</strong>
               <small>有历史投放数据时使用</small>
             </span>
           </button>
@@ -170,21 +170,23 @@
 
             <div class="grid two">
               <label class="field">
-                <span>广告目标</span>
+                <span>Campaign Goal</span>
                 <select name="adGoal">
-                  <option>Get purchases</option>
+                  <option>Purchases</option>
                   <option>App installs</option>
-                  <option>Lead generation</option>
-                  <option>Brand awareness</option>
+                  <option>Leads</option>
+                  <option>Awareness</option>
+                  <option>Retargeting</option>
                 </select>
               </label>
               <label class="field">
-                <span>产品价格区间</span>
-                <select name="priceRange">
-                  <option>Under $20</option>
-                  <option>$20–$50</option>
-                  <option>$50–$100</option>
-                  <option>$100+</option>
+                <span>Main Offer</span>
+                <select name="mainOffer">
+                  <option>No offer</option>
+                  <option>Discount</option>
+                  <option>Free trial</option>
+                  <option>Bundle</option>
+                  <option>Limited time offer</option>
                 </select>
               </label>
             </div>
@@ -212,14 +214,15 @@
                 </select>
               </label>
               <label class="field">
-                <span>主要卖点类型</span>
+                <span>Creative Angle</span>
                 <select name="sellingAngle">
-                  <option>Saves time</option>
-                  <option>Saves money</option>
-                  <option>Looks better</option>
-                  <option>Solves pain</option>
+                  <option>Save time</option>
+                  <option>Save money</option>
+                  <option>Look better</option>
+                  <option>Solve pain</option>
                   <option>Social proof</option>
-                  <option>Novelty / curiosity</option>
+                  <option>Curiosity</option>
+                  <option>Fear of missing out</option>
                 </select>
               </label>
             </div>
@@ -335,13 +338,13 @@
             </label>
 
             <div class="field">
-              <span>素材限制</span>
+              <span>Compliance Constraints</span>
               <div class="constraint-grid">
-                <label><input type="checkbox" name="assetConstraints" value="Only use uploaded assets" /> Only use uploaded assets</label>
-                <label><input type="checkbox" name="assetConstraints" value="Can generate new scenes" /> Can generate new scenes</label>
-                <label><input type="checkbox" name="assetConstraints" value="Avoid showing faces" /> Avoid showing faces</label>
-                <label><input type="checkbox" name="assetConstraints" value="Avoid medical claims" /> Avoid medical claims</label>
-                <label><input type="checkbox" name="assetConstraints" value="Avoid unrealistic results" /> Avoid unrealistic results</label>
+                <label><input type="checkbox" name="assetConstraints" value="No medical claims" /> No medical claims</label>
+                <label><input type="checkbox" name="assetConstraints" value="No exaggerated results" /> No exaggerated results</label>
+                <label><input type="checkbox" name="assetConstraints" value="No fake testimonials" /> No fake testimonials</label>
+                <label><input type="checkbox" name="assetConstraints" value="No competitor logos" /> No competitor logos</label>
+                <label><input type="checkbox" name="assetConstraints" value="No before/after body transformation" /> No before/after body transformation</label>
               </div>
             </div>
           </section>
@@ -406,11 +409,12 @@
           <div><span>Target Audience</span><p id="briefAudience">等待目标用户描述。</p></div>
           <div><span>Pain Points</span><p id="briefPainPoints">等待痛点输入。</p></div>
           <div><span>Core Selling Angles</span><p id="briefSellingAngles">等待卖点类型。</p></div>
-          <div><span>Ad Structure</span><p id="briefAdStructure">Hook → Problem → Product demo → Proof → CTA</p></div>
           <div><span>Hook Variants</span><p id="briefHooks">生成 3–5 个开头角度。</p></div>
-          <div><span>Visual Direction</span><p id="briefVisual">根据素材和限制决定画面。</p></div>
-          <div><span>Voiceover Tone</span><p id="briefVoiceover">自然、可信、短句。</p></div>
-          <div><span>CTA</span><p id="briefCta">根据广告目标生成 CTA。</p></div>
+          <div><span>Script Structure</span><p id="briefScriptStructure">Hook → Problem → Product demo → Proof → CTA</p></div>
+          <div><span>Shot List</span><p id="briefShotList">根据素材和限制决定画面。</p></div>
+          <div><span>Caption Style</span><p id="briefCaptionStyle">短句字幕，突出痛点和结果。</p></div>
+          <div><span>CTA Direction</span><p id="briefCtaDirection">根据 Campaign Goal 生成 CTA。</p></div>
+          <div><span>Risk / Compliance Notes</span><p id="briefRiskNotes">等待合规限制。</p></div>
           <div><span>A/B Testing Plan</span><p id="briefTesting">按 hook、卖点、CTA 做基础测试。</p></div>
         </div>
 
@@ -420,10 +424,10 @@
             <strong>预计输出</strong>
           </div>
           <ul id="outputList">
-            <li>广告结构拆解</li>
-            <li>Hook 与脚本变体</li>
-            <li>镜头分镜与字幕方向</li>
-            <li>下一批 A/B 测试建议</li>
+            <li>Creative Brief 与投放假设</li>
+            <li>Hook Variants 与脚本结构</li>
+            <li>Shot List 与字幕风格</li>
+            <li>Risk Notes 与 A/B Testing Plan</li>
           </ul>
         </div>
 
