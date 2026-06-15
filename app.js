@@ -108,6 +108,7 @@ const nextStepButton = document.querySelector("#nextStep");
 const submitBriefButton = document.querySelector("#submitBrief");
 let currentStep = 0;
 let latestAgentBrief = null;
+let editingHistoryEntry = null;
 
 const preview = {
   modeName: document.querySelector("#modeName"),
@@ -196,6 +197,11 @@ function textFrom(element) {
   return String(element?.textContent || "").trim();
 }
 
+function fieldNameSelector(name) {
+  const escaped = window.CSS?.escape ? window.CSS.escape(name) : String(name).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+  return `[name='${escaped}']`;
+}
+
 function buildBriefHistoryEntry() {
   const data = formDataSnapshot();
   const mode = currentMode();
@@ -206,6 +212,8 @@ function buildBriefHistoryEntry() {
   const quantity = textFrom(preview.quantity) || data.quantity || meta.quantity;
 
   return {
+    id: editingHistoryEntry?.id,
+    createdAt: editingHistoryEntry?.createdAt,
     mode,
     modeName: meta.name,
     brand,
@@ -234,6 +242,58 @@ function buildBriefHistoryEntry() {
       testing: textFrom(brief.testing),
     },
   };
+}
+
+function setFieldValue(name, value) {
+  const fields = Array.from(form.querySelectorAll(fieldNameSelector(name)));
+  if (!fields.length) return;
+  const values = Array.isArray(value) ? value.map(String) : [String(value ?? "")];
+
+  fields.forEach((field) => {
+    if (field.type === "file") return;
+    if (field.type === "radio") {
+      field.checked = values.includes(field.value);
+      return;
+    }
+    if (field.type === "checkbox") {
+      field.checked = values.includes(field.value);
+      return;
+    }
+    field.value = values[0] || "";
+  });
+}
+
+function syncChoiceState() {
+  document.querySelectorAll(".choice").forEach((choice) => {
+    const input = choice.querySelector("input");
+    choice.classList.toggle("checked", Boolean(input?.checked));
+  });
+}
+
+function applyBriefSnapshot(savedBrief) {
+  if (!savedBrief || typeof savedBrief !== "object") return;
+  Object.entries(savedBrief).forEach(([key, value]) => {
+    if (brief[key] && String(value || "").trim()) {
+      brief[key].textContent = value;
+    }
+  });
+}
+
+function restoreHistoryEntry(entry) {
+  if (!entry) return;
+  editingHistoryEntry = entry;
+  const data = entry.formData || {};
+  Object.entries(data).forEach(([key, value]) => {
+    if (key === "mode") return;
+    setFieldValue(key, value);
+  });
+  if (entry.assetConstraints?.length) {
+    setFieldValue("assetConstraints", entry.assetConstraints);
+  }
+  syncChoiceState();
+  updatePreview();
+  applyBriefSnapshot(entry.brief);
+  showToast("已从历史记录载入，可以继续编辑。");
 }
 
 function showToast(message) {
@@ -476,6 +536,7 @@ form.addEventListener("submit", async (event) => {
   submitBriefButton.disabled = true;
   try {
     const result = await window.vignetteHistory.saveBrief(payload);
+    editingHistoryEntry = result.entry;
     const message = result.cloudSaved
       ? "创意 Brief 已保存到历史记录，并已同步账号。"
       : "创意 Brief 已保存到本地历史记录。";
@@ -490,7 +551,12 @@ form.addEventListener("submit", async (event) => {
 window.addEventListener("DOMContentLoaded", async () => {
   window.lucide?.createIcons();
   const params = new URLSearchParams(window.location.search);
-  const requestedMode = params.get("mode") || sessionStorage.getItem("vignetteAgentMode") || "quick";
+  const historyId = params.get("history");
+  let historyEntry = null;
+  if (historyId && window.vignetteHistory) {
+    historyEntry = await window.vignetteHistory.getBrief(historyId).catch(() => null);
+  }
+  const requestedMode = historyEntry?.mode || params.get("mode") || sessionStorage.getItem("vignetteAgentMode") || "quick";
   const initialMode = modeMeta[requestedMode] ? requestedMode : "quick";
   try {
     latestAgentBrief = JSON.parse(sessionStorage.getItem("vignetteAgentBrief") || "null");
@@ -498,7 +564,17 @@ window.addEventListener("DOMContentLoaded", async () => {
     latestAgentBrief = null;
   }
   setModeTab(initialMode);
+  if (historyId && !historyEntry) {
+    showToast("没有找到这条历史记录，可能已被删除或不在当前浏览器。");
+  }
+  if (historyEntry) {
+    restoreHistoryEntry(historyEntry);
+  }
   updateStep();
   updatePreview();
-  applyAgentBrief(latestAgentBrief);
+  if (historyEntry) {
+    applyBriefSnapshot(historyEntry.brief);
+  } else {
+    applyAgentBrief(latestAgentBrief);
+  }
 });

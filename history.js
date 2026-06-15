@@ -76,8 +76,8 @@ function renderCard(entry) {
         </dl>
       </details>
       <div class="history-card-actions">
-        <a class="secondary-button" href="./details.html?mode=${encodeURIComponent(entry.mode)}">
-          继续生成
+        <a class="secondary-button" href="./details.html?history=${encodeURIComponent(entry.id)}">
+          继续编辑
           <i data-lucide="arrow-right"></i>
         </a>
         <button class="text-danger" type="button" data-delete-history="${escapeHistoryHtml(entry.id)}">删除</button>
